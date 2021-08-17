@@ -1,0 +1,1 @@
+free --mebi | awk '/Mem:/ { printf(" 🐏 %5s/%s M\n", $2-$7, $2) }'

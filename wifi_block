@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+from os import popen as pp
+
+def not_empty(string):
+    if string != "":
+        return True
+    else:
+        return False
+generated = pp("nmcli device wifi | grep \*").read()
+generated = generated.split(" ")
+data = list(filter(not_empty, generated))
+if data[0] == "*":
+    print("\uf1eb"+"  "+data[2]+" ")
+else:
+    print("\uf1eb"+"  "+"Disconnected"+" ")

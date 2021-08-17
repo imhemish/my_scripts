@@ -1,0 +1,8 @@
+synclient HorizTwoFingerScroll=1
+synclient CircularScrolling=0
+synclient HorizEdgeScroll=0
+synclient VertEdgeScroll=0
+synclient TapButton3=2
+synclient VertScrollDelta=-27
+synclient HorizScrollDelta=-27
+synclient PalmDetect=1
