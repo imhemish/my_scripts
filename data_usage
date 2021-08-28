@@ -1,2 +1,0 @@
-usage=$(vnstat --days 1 | head -n 6 | tail -n 1 | cut -d '|' -f 3 | cut -d ' ' -f 3,4)
-echo  $usage
