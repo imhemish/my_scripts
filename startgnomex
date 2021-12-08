@@ -1,1 +1,1 @@
-XDG_SESSION_TYPE=x11 GTK_CSD=1 exec startx /usr/bin/gnome-session
+QT_STYLE_OVERRIDE=Adwaita-Dark XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_DESKTOP=GNOME XDG_SESSION_TYPE=x11 exec startx /usr/bin/gnome-session

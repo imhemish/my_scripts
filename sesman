@@ -1,0 +1,178 @@
+#!/usr/bin/env python3
+from os import popen as cmd
+from os.path import expanduser as exp
+from os.path import join, exists
+from os import system, mkdir, remove
+from toml import dump, load
+import sys
+# default_ses: on which session, should the cursor be kept or what to boot directly if wait for selection is False
+
+# special value for default_ses: !sesprev!
+# that would use the previously selected session
+
+
+# You can put your configuration here to dump
+
+template_config = {
+    "default_ses": "Console", 
+    "wait_for_selection": True,
+    "startup": {
+        "run_before_session_initialisation": ["echo dummycmd"], "run_after_session_initialisation": ["echo dummycmd"]
+    },
+    "sessions": [
+        {"name": "sway", "wayland": True, "cmd": "sway"},
+        {"name": "i3", "wayland": False, "cmd": "i3"},
+        {"name": "GNOME", "wayland": True, "cmd": "gnome-session"}
+    ]
+}
+
+# Create a cache folder
+def create_cache_if_not_exists():
+    if not exists(exp("~/.cache/sesman")):
+        mkdir(exp("~/.cache/sesman"))
+    else:
+        pass
+
+# Dump configs if dont exist
+def check_configs(template_config):
+    if not exists(exp("~/.config/sesman.toml")):
+        filenew = open(exp("~/.config/sesman.toml"), "a")
+        dump(template_config, filenew)
+        filenew.close()
+
+# Read Configs
+def read_configs():
+    return load(exp("~/.config/sesman.toml"))
+
+def save_configs(configdict):
+    try:
+        remove(expanduser("~/.config/sesman.toml"))
+    except:
+        pass
+    filenew = open(exp("~/.config/sesman.toml", "a"))
+    dump(configdict, filenew)
+    filenew.close()
+
+# Start a wayland or x11 session
+# session_dict is a dcitionary containing appropriate "name", "cmd" keys and values
+# startup_dict is a startup defining dictionary as in config file
+def start_session(session_dict, startup_dict):
+    # Print the session we are launching
+    print(session_dict["name"])
+
+    # Remove previous remains
+    try:
+        remove(exp("~/.cache/sesman/temp_shell"))
+        remove(exp("~/.cache/sesman/temp_xinitrc"))
+    except:
+        pass
+
+    # X11 session
+    if not session_dict["wayland"]:
+
+        # Create a temporary xinitrc and add processes to be run before sesison initialisation and then place the name of command to call for session
+        with open(exp("~/.cache/sesman/temp_xinitrc"), "a") as temp_file:
+            for item in configs["startup"]["run_before_session_initialisation"]:
+                temp_file.write(item+"\n")
+            temp_file.write("dbus-run-session " + session_dict["cmd"]+"\n")
+
+        # Add processes to be run after session initialisation
+        with open(exp("~/.cache/sesman/temp_xinitrc"), "a") as temp_file:
+            for item in startup_dict["run_after_session_initialisation"]:
+                temp_file.write(item+"\n")
+
+        # A temporary shell script to launch previous xinitrc with startx
+        with open(exp("~/.cache/sesman/temp_shell"), "a") as temp_file:
+            temp_file.write("QT_STYLE_OVERRIDE=Adwaita-Dark XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP={} XDG_SESSION_DESKTOP={} startx {}".format(session_dict["name"], session_dict["name"], exp("~/.cache/sesman/temp_xinitrc")))
+        
+        # Making scripts executable
+        cmd("chmod +x {}".format(exp("~/.cache/sesman/temp_xinitrc")))
+        cmd("chmod +x {}".format(exp("~/.cache/sesman/temp_shell")))
+
+        # Executing the shell script
+        system(exp("~/.cache/sesman/temp_shell"))
+
+    # Wayland session
+    else:
+
+        # Create a temporary xinitrc and add processes to be run before sesison initialisation and then place the name of command to call for session with dbus-run-session
+        with open(exp("~/.cache/sesman/temp_shell"), "a") as temp_file:
+            for item in configs["startup"]["run_before_session_initialisation"]:
+                temp_file.write(item+"\n")
+            temp_file.write("XCURSOR_SIZE=1 XDG_CURRENT_DESKTOP="+session_dict["name"]+" "+"XDG_SESSION_DESKTOP="+session_dict["name"]+" "+"XDG_SESSION_TYPE=wayland MOZ_ENABLE_WAYLAND=1 QT_STYLE_OVERRIDE=Adwaita-Dark QT_QPA_PLATFORM=wayland dbus-run-session "+ session_dict["cmd"]+"\n")
+
+        # Add processes to be run after session initialisation
+        with open(exp("~/.cache/sesman/temp_shell"), "a") as temp_file:
+            for item in startup_dict["run_after_session_initialisation"]:
+                temp_file.write(item+"\n")
+
+        # Making script executable
+        system("chmod +x {}".format(exp("~/.cache/sesman/temp_shell")))
+
+        # Executing script
+        system(exp("~/.cache/sesman/temp_shell"))
+
+
+def main():
+    global configs
+
+    create_cache_if_not_exists()
+
+    # Creating configs if dont exist
+    check_configs(template_config)
+
+    # Reading configs
+    configs = read_configs()
+
+    if len(sys.argv) > 1:
+        configs["default_ses"] = sys.argv[1]
+        configs["wait_for_selection"] = False
+
+    # Reading sessions from config
+    sessions_list = configs["sessions"]
+
+    # Adding a non-gui console session
+    sessions_list.append({"name": "Console"})
+
+    # If wait_for_selection is True
+    if configs["wait_for_selection"]:
+        for item in enumerate(sessions_list, start=1):
+            print("[{}] {}".format(item[0], item[1]["name"]))
+        print("Enter the session to be started")
+        try:
+            session_to_start = int(input(">> "))
+            session = sessions_list[session_to_start-1]
+            
+        # In case random characters are entered
+        except:
+            print("Could not find session. Starting the default entry: {}".format(configs["default_ses"]))
+
+            # If console session, then just exit the program
+            if configs["default_ses"] == "Console":
+                exit()
+            else:
+
+                # Find the session_dict for default session
+                for item in sessions_list:
+                    if item["name"] == configs["default_ses"]:
+                        session = item
+                start_session(session, configs["startup"])
+                exit()
+        if session["name"] == "Console":
+            exit()
+        else:
+            start_session(session, configs["startup"])
+        exit()
+
+
+    # if default session is set
+    else:
+        if configs["default_ses"] == "Console":
+            exit()
+        else:
+            for item in sessions_list:
+                    if item["name"] == configs["default_ses"]:
+                        session = item
+            start_session(session, configs["startup"])
+            exit()
+main()
