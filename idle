@@ -1,0 +1,1 @@
+setsid swayidle -C ~/.config/sway/idle
