@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+from os import listdir as ls
+from os import chdir as cd
+from os import system as pp
+from os.path import expanduser as _
+
+cd(_("~/github"))
+dirs = ls(_("~/github/"))
+dirs.remove("mpr")
+dirs.remove("aur")
+for item in dirs:
+    dir = item
+    cd(dir)
+    print(dir)
+    pp("git pull".format(dir))
+    cd("..")
+
+

@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+import textile
+import sys
+for item in sys.argv[1:]:
+    with open(item, "r") as file:
+        cont = file.read()
+        c = textile.textile(cont)
+    with open(item.split(".textile")[0]+".html", "w") as filewrite:
+        filewrite.write(c)
+
