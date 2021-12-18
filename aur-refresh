@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+from os import system
+from os import chdir as cd
+from os import listdir as ls
+from os.path import expanduser as _
+
+cd(_("~/github"))
+
+for service in ["aur", "mpr"]:
+    cd(service)
+    for item in ls():
+        cd(item)
+        if service == "aur":
+            system("makepkg")
+        if service == "mpr":
+            system("makedeb")
+        system("makepkg --printsrcinfo > .SRCINFO")
+        system("rm pkg src {} -rf".format(item))
+        cd("..")
+    cd("..")
