@@ -1,2 +1,25 @@
-awk '{if(l1){print ($2-l1)/1024"kB/s",($10-l2)/1024"kB/s"} else{l1=$2; l2=$10;}}' \
-    <(grep wlan0 /proc/net/dev) <(sleep 1; grep wlan0 /proc/net/dev)
+#!/usr/bin/env python3
+
+interface = "wlan0"
+
+from os import popen
+from time import sleep
+
+temp_conti = str(popen("grep {} /proc/net/dev".format(interface)).read().rstrip()).split(" ")
+conti = []
+for item in temp_conti:
+    if str(item) != "":
+        conti.append(item)
+
+sleep(0.9999)
+
+temp_contf = str(popen("grep {} /proc/net/dev".format(interface)).read().rstrip()).split(" ")
+contf = []
+for item in temp_contf:
+    if str(item) != "":
+        contf.append(item)
+
+d_diff = int(contf[1]) - int(conti[1])
+u_diff = int(contf[9]) - int(conti[9])
+
+print("D: {}kb/s U: {}kb/s".format(int(d_diff/1024), int(u_diff/1024)))
