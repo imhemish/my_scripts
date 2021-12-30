@@ -3,7 +3,7 @@ dmenu=dmenu-wl
 
 walldir="$HOME/bg/"
 maxpage=5
-tagoptions="#gay\n#minimalism\n#Sexy Boy\n#fantasy boy\n#digital art\n#Hot Boy\n#Hunk"
+tagoptions="#minimalism\n#fantasy\n#digital art"
 if [ -z $1 ]; then
   query=$(echo -e $tagoptions | $dmenu -p "Search Wallhaven: " -i)  
 else
