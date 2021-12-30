@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+from os import system
+from os import popen
+curr = popen("brightnessctl -m").read().rstrip().split(',')[2]
+print(int(curr))
+if int(curr) == 0:
+    system("brightnessctl -r")
+else:
+    system("brightnessctl s 0")
+

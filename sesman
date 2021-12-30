@@ -58,7 +58,7 @@ def save_configs(configdict):
 # startup_dict is a startup defining dictionary as in config file
 def start_session(session_dict, startup_dict):
     # Print the session we are launching
-    print(session_dict["name"])
+    #print(session_dict["name"])
 
     # Remove previous remains
     try:
