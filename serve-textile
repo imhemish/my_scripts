@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+from flask import Flask, send_file
+from textile import textile
+from os.path import isfile, isdir, exists
+from os.path import join as joinp
+from os import listdir as ls
+
+def is_supported(path): # Support only directories and .textile
+    if path.endswith(".textile"):
+        return True
+    if isdir(path):
+        return True
+    else:
+        return False
+
+app = Flask(__name__)
+'''
+@app.route("/favicon.ico")
+def favicon():
+    return send_file("static/favicon.ico")
+'''
+@app.route("/<path:p>")
+def return_dir(p):
+    if (not exists(p)) and (not exists(p+".textile")):
+        return "404"
+    else:
+        print(p)
+        if isdir(p) and isfile(p+".textile"):
+            node = "file"
+        elif isdir(p):
+            node="directory"
+        elif isfile(p+".textile"):
+            node="file"
+        if node=="file":
+            with open(p+".textile", "r") as file:
+                cont = textile(file.read().rstrip())
+            return cont
+        elif node=="directory":
+            dirs = ls(p)
+            c = list(filter(is_supported, dirs))
+            print(c)
+            to_return = []
+            to_return.append("<ul>")
+            for item in c:
+                i = item
+                try:
+                    i = i.replace(".textile", "")
+                except:
+                    pass
+                to_return.append("<li> <a href='{}'>{}</li>".format(joinp(p, i), "/{}".format(joinp(p, i))))
+            return " ".join(to_return)
+
+app.run(debug=True)
+
