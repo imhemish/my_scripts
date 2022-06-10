@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-flags = ["password-store=basic"]
+flags = ["password-store=basic", "no-sandbox"]
 
 from os import environ
 from os.path import expanduser as exp

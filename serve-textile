@@ -5,6 +5,7 @@ from textile import textile
 from os.path import isfile, isdir, exists
 from os.path import join as joinp
 from os import listdir as ls
+from livereload import Server
 
 def is_supported(path): # Support only directories and .textile
     if path.endswith(".textile"):
@@ -51,5 +52,5 @@ def return_dir(p):
                 to_return.append("<li> <a href='{}'>{}</li>".format(joinp(p, i), "/{}".format(joinp(p, i))))
             return " ".join(to_return)
 
-app.run(debug=True)
-
+server = Server(app.wsgi_app)
+server.serve()

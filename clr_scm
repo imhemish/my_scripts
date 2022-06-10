@@ -1,0 +1,3 @@
+cd /home/cat/pkg/kfc
+./kfc -s base16-gruvbox-hard 2>/dev/null
+cd

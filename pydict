@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+import requests, sys, json
+url = 'https://api.dictionaryapi.dev/api/v2/entries/en/'+sys.argv[1]
+r = requests.get(url)
+result = json.loads(r.text)
+print ("Meaning: ", result[0]["meanings"][0]["definitions"][0]["definition"])
