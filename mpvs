@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-from os import system
-from sys import argv
-from pathlib import Path
-system("mpv {} --sub-file={} {}".format(argv[1], str(Path(argv[1]).with_suffix(".srt")), argv[2:]))
-
