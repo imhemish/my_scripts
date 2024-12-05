@@ -87,7 +87,6 @@ if len(argv) == 1:
         if path not in shared_filenames:
             os.remove(website_shares_path+path)
 else:
-    
     # the files which were modified are passed as command line args (full path)
     # the script would check if the file even is present in .shared
     # if it is there, then it updates it
