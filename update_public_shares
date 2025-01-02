@@ -8,7 +8,7 @@ NOTES_PATH = "/home/hemish/data/notes/"
 WEBSITE_PATH="/home/hemish/projects/website/"
 # website root
 
-shared_notes_file_path = NOTES_PATH + ".shared"
+shared_notes_file_path = NOTES_PATH + "shared"
 website_shares_path = WEBSITE_PATH + "content/public_shares/"
 
 
